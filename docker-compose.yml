@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  nextjs:
+    image: node:18-alpine  # Using Node.js 18.x for compatibility
+    container_name: nextjs
+    working_dir: /srv/app
+    volumes:
+      - ./:/srv/app  # Mount the project directory inside the container
+      - /srv/app/node_modules  # Local node_modules directory (only inside the container)
+    ports:
+      - "3000:3000"  # Expose Next.js app on port 3000
+    env_file:
+      - .env  # Reference to the .env file for environment variables
+    command: sh -c "yarn install && yarn build && yarn start"  # Install, build, and start Next.js app

@@ -1,0 +1,45 @@
+name: Deploy Next.js App to DigitalOcean
+
+on:
+  workflow_dispatch:  # Manual trigger for deployment
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      API_BASE_URL: ${{ vars.API_BASE_URL }}
+      DO_HOST: ${{ vars.DO_HOST }}
+      DO_USERNAME: ${{ vars.DO_USERNAME }}
+      DO_PASSWORD: ${{ vars.DO_PASSWORD }}
+
+    steps:
+      # Step 1: Checkout code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Create .env file
+      - name: Create .env file
+        run: |
+          echo "API_BASE_URL=$API_BASE_URL" >> .env
+
+      # Step 3: Copy files to DigitalOcean
+      - name: Copy files to DigitalOcean
+        run: |
+          sshpass -p "$DO_PASSWORD" scp -o StrictHostKeyChecking=no -r . $DO_USERNAME@$DO_HOST:~/static-site
+          sshpass -p "$DO_PASSWORD" scp -o StrictHostKeyChecking=no .env $DO_USERNAME@$DO_HOST:~/static-site/.env
+
+      # Step 4: Delete local .env file
+      - name: Delete local .env file
+        run: |
+          rm .env
+
+      # Step 5: Deploy to DigitalOcean via SSH
+      - name: Deploy to DigitalOcean via SSH
+        run: |
+          # Use sshpass for password-based SSH authentication
+          sshpass -p "$DO_PASSWORD" ssh -o StrictHostKeyChecking=no $DO_USERNAME@$DO_HOST << 'EOF'
+            cd static-site || exit 1
+            docker compose down
+            docker compose up -d
+          EOF
