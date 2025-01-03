@@ -12,4 +12,4 @@ services:
       - "3000:3000"  # Expose Next.js app on port 3000
     env_file:
       - .env  # Reference to the .env file for environment variables
-    command: sh -c " yarn dev"  # Install, build, and start Next.js app
+    command: sh -c "yarn install && yarn build && yarn start"  # Install, build, and start Next.js app
