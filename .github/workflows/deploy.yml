@@ -29,7 +29,7 @@ jobs:
           sshpass -p "$DO_PASSWORD" scp -o StrictHostKeyChecking=no -r . $DO_USERNAME@$DO_HOST:~/static-site
           sshpass -p "$DO_PASSWORD" scp -o StrictHostKeyChecking=no .env $DO_USERNAME@$DO_HOST:~/static-site/.env
 
-      # Step 4: Delete local .env file
+      # Step 4: Delete local .env fil
       - name: Delete local .env file
         run: |
           rm .env
